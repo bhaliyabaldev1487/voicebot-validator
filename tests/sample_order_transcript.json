@@ -1,0 +1,16 @@
+{
+  "segments": [
+    {
+      "speaker": "CUSTOMER",
+      "text": "I want to know my order status"
+    },
+    {
+      "speaker": "BOT",
+      "text": "Sure. Can you share your order number?"
+    },
+    {
+      "speaker": "CUSTOMER",
+      "text": "123456789"
+    }
+  ]
+}

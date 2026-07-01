@@ -1,0 +1,30 @@
+ALLOWED_TRANSITIONS = {
+
+    "START": [
+        "ORDER_INTENT_DETECTED"
+    ],
+
+    "ORDER_INTENT_DETECTED": [
+        "WAITING_FOR_IDENTIFIER"
+    ],
+
+    "WAITING_FOR_IDENTIFIER": [
+        "IDENTIFIER_RECEIVED"
+    ],
+
+    "IDENTIFIER_RECEIVED": [
+        "ORDER_LOOKUP"
+    ],
+
+    "ORDER_LOOKUP": [
+        "ORDER_VALIDATED"
+    ],
+
+    "ORDER_VALIDATED": [
+        "RESPONSE_GIVEN"
+    ],
+
+    "RESPONSE_GIVEN": [
+        "END"
+    ]
+}
