@@ -1,0 +1,16 @@
+app:
+  name: VoiceBot Validator
+  environment: dev
+
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: root
+  database: ecommerce
+
+logging:
+  level: INFO
+
+reports:
+  output: output/
