@@ -1,0 +1,12 @@
+{
+  "turns": [
+    {
+      "speaker": "customer",
+      "text": "Hi, I want to know the status of my order AZA12345. My mobile number is 9876543210."
+    },
+    {
+      "speaker": "bot",
+      "text": "Sure. Your order AZA12345 is shipped and the total amount is 5499.00."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "turns": [
+    {
+      "speaker": "customer",
+      "text": "Hi, I want to know the status of my order AZA12345."
+    },
+    {
+      "speaker": "bot",
+      "text": "Your order AZA12345 has been delivered."
+    }
+  ]
+}

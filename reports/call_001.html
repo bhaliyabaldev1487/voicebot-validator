@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Voicebot Order Validation Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 24px;
+      color: #222;
+      background: #fafafa;
+    }
+    h1, h2, h3 {
+      margin-bottom: 8px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .status {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .pass {
+      background: #2e7d32;
+    }
+    .fail {
+      background: #c62828;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: #f5f5f5;
+    }
+    .mono {
+      font-family: Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #f8f8f8;
+      border-radius: 6px;
+      padding: 10px;
+    }
+    .check-pass {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .check-fail {
+      color: #c62828;
+      font-weight: bold;
+    }
+    .section-title {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Voicebot Order Validation Report</h1>
+
+  <div class="card">
+    <div class="status pass">PASSED</div>
+    <h2 class="section-title">Validation Summary</h2>
+    <p><strong>Summary:</strong> 2/2 checks passed</p>
+    <p><strong>Passed checks:</strong> 2</p>
+    <p><strong>Failed checks:</strong> 0</p>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Metadata</h2>
+    <p>No data available.</p>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Extracted Entities</h2>
+    
+<table>
+  <tbody>
+    <tr><th>order_number</th><td></td></tr><tr><th>customer_email</th><td></td></tr><tr><th>customer_phone</th><td>8446335322</td></tr><tr><th>customer_mobile</th><td>8446335322</td></tr><tr><th>intent</th><td></td></tr>
+  </tbody>
+</table>
+
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Lookup Result</h2>
+    <h3>Lookup Meta</h3>
+    
+<table>
+  <tbody>
+    <tr><th>success</th><td>True</td></tr><tr><th>lookup_method</th><td>customer</td></tr><tr><th>message</th><td>Customer and order found</td></tr>
+  </tbody>
+</table>
+
+
+    <h3>Customer</h3>
+    
+<table>
+  <tbody>
+    <tr><th>site_user_id</th><td>285873</td></tr><tr><th>first_name</th><td>Baldev Bhaliya</td></tr><tr><th>last_name</th><td>Testing</td></tr><tr><th>full_name</th><td>Baldev Bhaliya Testing</td></tr><tr><th>email</th><td>baldev111@azafashions.com</td></tr><tr><th>phone_no</th><td>8446335322</td></tr><tr><th>mobile</th><td></td></tr>
+  </tbody>
+</table>
+
+
+    <h3>Order</h3>
+    
+<table>
+  <tbody>
+    <tr><th>order_id</th><td>572917</td></tr><tr><th>customer_order_number</th><td>2CCAHDD8</td></tr><tr><th>site_user_id</th><td>285873</td></tr><tr><th>order_status</th><td>PROCESSING</td></tr><tr><th>shipping_status</th><td>PROCESSING</td></tr><tr><th>payment_status</th><td>SUCCESS</td></tr><tr><th>total_price</th><td>31935</td></tr><tr><th>date_added</th><td>2026-03-10 17:58:52</td></tr>
+  </tbody>
+</table>
+
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Validation Checks</h2>
+    
+<table>
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Status</th>
+      <th>Expected</th>
+      <th>Actual</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+<tr>
+  <td>Customer Found</td>
+  <td class="check-pass">PASS</td>
+  <td>Customer exists</td>
+  <td>Found</td>
+  <td></td>
+</tr>
+
+<tr>
+  <td>Order Found</td>
+  <td class="check-pass">PASS</td>
+  <td>Order exists</td>
+  <td>Found</td>
+  <td></td>
+</tr>
+
+  </tbody>
+</table>
+
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Transcript - Customer</h2>
+    <div class="mono"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Transcript - Bot</h2>
+    <div class="mono"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Transcript - Full Conversation</h2>
+    <div class="mono"></div>
+  </div>
+
+</body>
+</html>

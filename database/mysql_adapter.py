@@ -1,33 +1,9 @@
+from __future__ import annotations
+
 from sqlalchemy import create_engine
-from sqlalchemy import text
-
-from config.settings import settings
+from sqlalchemy.orm import sessionmaker
 
 
-class MySQLAdapter:
-
-    def __init__(self):
-
-        db = settings.database
-
-        self.engine = create_engine(
-            f"mysql+pymysql://"
-            f"{db['user']}:{db['password']}"
-            f"@{db['host']}:{db['port']}"
-            f"/{db['database']}"
-        )
-
-    def get_customer_by_phone(self, phone):
-
-        sql = text("""
-        SELECT *
-        FROM customers
-        WHERE phone=:phone
-        """)
-
-        with self.engine.connect() as conn:
-
-            return conn.execute(
-                sql,
-                {"phone": phone}
-            ).mappings().first()
+def create_session_factory(connection_url: str, echo: bool = False):
+    engine = create_engine(connection_url, echo=echo, future=True)
+    return sessionmaker(bind=engine, autoflush=False, autocommit=False)

@@ -1,0 +1,12 @@
+{
+  "turns": [
+    {
+      "speaker": "customer",
+      "text": "Hello, I want to check my order status. My email is baldev@example.com."
+    },
+    {
+      "speaker": "bot",
+      "text": "Sure, let me check your order."
+    }
+  ]
+}

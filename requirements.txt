@@ -9,3 +9,4 @@ loguru
 jinja2
 rich
 pytest
+PyMySQL>=1.1.0
