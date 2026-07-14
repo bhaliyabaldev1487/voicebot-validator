@@ -1,23 +1,44 @@
+from typing import List
+
+from models.validation_context import ValidationContext
+from models.validation_evidence import ValidationEvidence
+from validators.rules.base_rule import ValidationRule
+from models.validation_result import ValidationResult
+
 class RuleEngine:
 
-    def __init__(self):
+    def __init__(self, rules: List[ValidationRule]):
+        self.rules = rules
 
-        self.rules = []
+    def execute(
+        self,
+        context: ValidationContext,
+    ) -> List[ValidationEvidence]:
 
-    def register(self, rule):
-
-        self.rules.append(rule)
-
-    def execute(self, context):
-
-        results = []
+        evidence = []
 
         for rule in self.rules:
 
-            results.append(
+            try:
 
-                rule.validate(context)
+                result = rule.validate(context)
 
-            )
+                if result:
+                    evidence.append(result)
 
-        return results
+            except Exception as ex:
+
+                evidence.append(
+                    ValidationEvidence(
+                        field_name=rule.__class__.__name__,
+                        expected="",
+                        actual="",
+                        passed=False,
+                        severity="CRITICAL",
+                        details=str(ex),
+                    )
+                )
+
+        return ValidationResult(
+            checks=evidence,
+        )

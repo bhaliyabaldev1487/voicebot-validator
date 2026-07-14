@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from database.mysql_provider import MySQLDatabaseProvider
+from extractors.bot_response_extractor import BotResponseExtractor
 from extractors.order_entities_extractor import OrderEntitiesExtractor
 from models.lookup import OrderLookupRequest
 from models.validation_context import ValidationContext
@@ -18,17 +19,12 @@ from reporting.html_reporter import HTMLReporter
 from reporting.json_reporter import JSONReporter
 from services.order_lookup_service import OrderLookupService
 from validators.order_flow_validator import OrderFlowValidator
-from extractors.bot_response_extractor import BotResponseExtractor
-from services.comparison_service import ComparisonService
+from validators.response_validator import ResponseValidator
+
 
 class OrderValidationRunner:
     """
-    Orchestrates the complete order-flow validation pipeline:
-    1. Parse transcript
-    2. Extract entities
-    3. Lookup customer/order from DB
-    4. Validate bot response against DB data
-    5. Return result and optionally write reports
+    End-to-end order validation pipeline.
     """
 
     def __init__(
@@ -38,6 +34,7 @@ class OrderValidationRunner:
         db_provider=None,
         lookup_service=None,
     ) -> None:
+
         self.db_connection_url = db_connection_url
         self.db_echo = db_echo
         self._db_provider = db_provider
@@ -45,7 +42,10 @@ class OrderValidationRunner:
 
         self.transcript_parser = TranscriptParser()
         self.entities_extractor = OrderEntitiesExtractor()
+        self.bot_response_extractor = BotResponseExtractor()
+
         self.validator = OrderFlowValidator()
+        self.response_validator = ResponseValidator()
 
     def run(
         self,
@@ -53,18 +53,34 @@ class OrderValidationRunner:
         caller_phone: Optional[str] = None,
         conversation_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """
-        Execute one end-to-end validation run.
-        """
+
+        # --------------------------------------------------
+        # Parse transcript
+        # --------------------------------------------------
+
         transcript = self.transcript_parser.parse_file(transcript_file)
-        entities = self.entities_extractor.extract(transcript.customer_text)
+
+        entities = self.entities_extractor.extract(
+            transcript.customer_text
+        )
+
+        bot_response = self.bot_response_extractor.extract(
+            transcript
+        )
+
+        # --------------------------------------------------
+        # Database
+        # --------------------------------------------------
 
         db = self._db_provider or MySQLDatabaseProvider(
             connection_url=self.db_connection_url,
             echo=self.db_echo,
         )
 
-        lookup_service = self._lookup_service or OrderLookupService(db)
+        lookup_service = (
+            self._lookup_service
+            or OrderLookupService(db)
+        )
 
         lookup_result = lookup_service.lookup(
             OrderLookupRequest(
@@ -75,59 +91,73 @@ class OrderValidationRunner:
                 customer_email=entities.customer_email,
             )
         )
+
+        # --------------------------------------------------
+        # Debug Output
+        # --------------------------------------------------
+
         print("\n========== DATABASE LOOKUP ==========")
 
-        print("Customer:")
+        print("\nCustomer")
+
         if lookup_result.customer:
             print(vars(lookup_result.customer))
         else:
             print("Not Found")
 
-        print("\nOrder:")
+        print("\nOrder")
+
         if lookup_result.order:
             print(vars(lookup_result.order))
         else:
             print("Not Found")
 
-        print("=====================================\n")
+        print("\n=====================================")
 
+        # --------------------------------------------------
+        # Validation Context
+        # --------------------------------------------------
+
+        # context = ValidationContext(
+        #     transcript=transcript,
+        #     entities=entities,
+        #     lookup_result=lookup_result,
+        #     caller_phone=caller_phone,
+        #     conversation_id=conversation_id,
+        # )
         context = ValidationContext(
             transcript=transcript,
             entities=entities,
             lookup_result=lookup_result,
+            bot_response=bot_response,
             caller_phone=caller_phone,
             conversation_id=conversation_id,
         )
+        #
+        # Temporary until ConversationContext is introduced
+        #
+        context.bot_response = bot_response
+
+        # --------------------------------------------------
+        # Existing Validation
+        # --------------------------------------------------
 
         validation_result = self.validator.validate(context)
 
-        bot_response = BotResponseExtractor().extract(transcript)
+        response_validation = self.response_validator.validate(context)
 
-        comparison = ComparisonService().compare(
-            lookup_result.order,
-            bot_response,
-        )
-
-        return {
-            "conversation_id": conversation_id,
-            "caller_phone": caller_phone,
-            "bot_response": bot_response.to_dict(),
-            "comparison": [x.to_dict() for x in comparison],
-            "validation": validation_result.to_dict(),
-        }
-    
-        # return {
-        #     "conversation_id": conversation_id,
-        #     "caller_phone": caller_phone,
-        #     "transcript_file": transcript_file,
-        #     "entities": entities.to_dict() if hasattr(entities, "to_dict") else vars(entities),
-        #     "lookup": lookup_result.to_dict() if hasattr(lookup_result, "to_dict") else vars(lookup_result),
-        #     "validation": (
-        #         validation_result.to_dict()
-        #         if hasattr(validation_result, "to_dict")
-        #         else vars(validation_result)
-        #     ),
-        # }
+        return{
+        "conversation_id": conversation_id,
+        "caller_phone": caller_phone,
+        "transcript_file": transcript_file,
+        "entities": entities.to_dict(),
+        "lookup": lookup_result.to_dict(),
+        "bot_response": bot_response.to_dict(),
+        "validation": validation_result.to_dict(),
+        "response_validation": [
+            item.to_dict() for item in response_validation
+        ],
+    }
 
     def run_and_write_reports(
         self,
@@ -136,9 +166,7 @@ class OrderValidationRunner:
         conversation_id: Optional[str] = None,
         output_dir: str = "reports",
     ) -> Dict[str, Any]:
-        """
-        Run validation and write JSON + HTML reports.
-        """
+
         result = self.run(
             transcript_file=transcript_file,
             caller_phone=caller_phone,
@@ -146,14 +174,28 @@ class OrderValidationRunner:
         )
 
         output_path = Path(output_dir)
-        output_path.mkdir(parents=True, exist_ok=True)
+        output_path.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
-        base_name = conversation_id or Path(transcript_file).stem
+        base_name = (
+            conversation_id
+            or Path(transcript_file).stem
+        )
+
         json_file = output_path / f"{base_name}.json"
         html_file = output_path / f"{base_name}.html"
 
-        JSONReporter().write(result, str(json_file))
-        HTMLReporter().write(result, str(html_file))
+        JSONReporter().write(
+            result,
+            str(json_file),
+        )
+
+        HTMLReporter().write(
+            result,
+            str(html_file),
+        )
 
         result["report_files"] = {
             "json": str(json_file),

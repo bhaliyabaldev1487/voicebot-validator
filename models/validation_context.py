@@ -12,7 +12,7 @@ from typing import Optional
 from extractors.order_entities_extractor import OrderEntities
 from models.lookup import LookupResult
 from models.transcript import ParsedTranscript
-
+from models.bot_response import BotOrderResponse
 
 @dataclass
 class ValidationContext:
@@ -23,6 +23,9 @@ class ValidationContext:
     transcript: ParsedTranscript
     entities: OrderEntities
     lookup_result: LookupResult
+
+    # NEW
+    bot_response: Optional[BotOrderResponse] = None
 
     # call metadata
     caller_phone: Optional[str] = None

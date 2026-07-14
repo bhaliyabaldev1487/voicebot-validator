@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class ValidationEvidence:
 
@@ -11,11 +12,36 @@ class ValidationEvidence:
 
     passed: bool
 
+    severity: str = "MEDIUM"
+
     confidence: float = 1.0
 
-    bot_sentence: str = ""
+    details: str = ""
 
     db_column: str = ""
 
+    bot_sentence: str = ""
+
     def to_dict(self):
-        return vars(self)
+
+        return {
+
+            "field": self.field_name,
+
+            "expected": self.expected,
+
+            "actual": self.actual,
+
+            "passed": self.passed,
+
+            "severity": self.severity,
+
+            "confidence": self.confidence,
+
+            "details": self.details,
+
+            "db_column": self.db_column,
+
+            "bot_sentence": self.bot_sentence,
+
+        }

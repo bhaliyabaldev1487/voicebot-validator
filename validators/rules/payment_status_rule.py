@@ -3,7 +3,7 @@ from nlp.semantic_matcher import SemanticMatcher
 from validators.rules.base_rule import ValidationRule
 
 
-class OrderStatusRule(ValidationRule):
+class PaymentStatusRule(ValidationRule):
 
     def __init__(self):
 
