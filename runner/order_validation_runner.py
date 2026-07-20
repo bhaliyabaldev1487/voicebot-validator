@@ -14,11 +14,11 @@ from extractors.bot_response_extractor import BotResponseExtractor
 from extractors.order_entities_extractor import OrderEntitiesExtractor
 from models.lookup import OrderLookupRequest
 from models.validation_context import ValidationContext
+from models.order_item import OrderItem
 from parser.transcript_parser import TranscriptParser
 from reporting.html_reporter import HTMLReporter
 from reporting.json_reporter import JSONReporter
-from services.order_lookup_service import OrderLookupService
-from validators.order_flow_validator import OrderFlowValidator
+
 from validators.response_validator import ResponseValidator
 
 
@@ -32,19 +32,16 @@ class OrderValidationRunner:
         db_connection_url: Optional[str] = None,
         db_echo: bool = False,
         db_provider=None,
-        lookup_service=None,
-    ) -> None:
+    ):
 
         self.db_connection_url = db_connection_url
         self.db_echo = db_echo
         self._db_provider = db_provider
-        self._lookup_service = lookup_service
 
         self.transcript_parser = TranscriptParser()
         self.entities_extractor = OrderEntitiesExtractor()
         self.bot_response_extractor = BotResponseExtractor()
 
-        self.validator = OrderFlowValidator()
         self.response_validator = ResponseValidator()
 
     def run(
@@ -59,6 +56,12 @@ class OrderValidationRunner:
         # --------------------------------------------------
 
         transcript = self.transcript_parser.parse_file(transcript_file)
+        print("\n===== TRANSCRIPT =====")
+        print("Customer:")
+        print(transcript.customer_text)
+
+        print("\nBot:")
+        print(transcript.bot_text)
 
         entities = self.entities_extractor.extract(
             transcript.customer_text
@@ -68,6 +71,9 @@ class OrderValidationRunner:
             transcript
         )
 
+        print("\n========== BOT RESPONSE ==========")
+        print(bot_response.to_dict())
+        print("==================================\n")
         # --------------------------------------------------
         # Database
         # --------------------------------------------------
@@ -76,21 +82,17 @@ class OrderValidationRunner:
             connection_url=self.db_connection_url,
             echo=self.db_echo,
         )
+        print(entities.to_dict())
 
-        lookup_service = (
-            self._lookup_service
-            or OrderLookupService(db)
+        lookup_request = OrderLookupRequest(
+            caller_phone=caller_phone,
+            order_number=entities.order_number,
+            customer_phone=entities.customer_phone,
+            customer_mobile=entities.customer_mobile,
+            customer_email=entities.customer_email,
         )
 
-        lookup_result = lookup_service.lookup(
-            OrderLookupRequest(
-                caller_phone=caller_phone,
-                order_number=entities.order_number,
-                customer_phone=entities.customer_phone,
-                customer_mobile=entities.customer_mobile,
-                customer_email=entities.customer_email,
-            )
-        )
+        lookup_result = db.lookup(lookup_request)
 
         # --------------------------------------------------
         # Debug Output
@@ -133,31 +135,44 @@ class OrderValidationRunner:
             caller_phone=caller_phone,
             conversation_id=conversation_id,
         )
-        #
-        # Temporary until ConversationContext is introduced
-        #
-        context.bot_response = bot_response
 
-        # --------------------------------------------------
+        print("\n========== ORDER ITEMS ==========")
+
+        if lookup_result.order_items:
+            for index, item in enumerate(lookup_result.order_items, start=1):
+                print(f"\nItem {index}")
+                print(item.to_dict())
+        else:
+            print("No order items found")
+
+        print("================================")        # --------------------------------------------------
+
         # Existing Validation
         # --------------------------------------------------
 
-        validation_result = self.validator.validate(context)
+        validation_result = self.response_validator.validate(context)
 
-        response_validation = self.response_validator.validate(context)
-
-        return{
-        "conversation_id": conversation_id,
-        "caller_phone": caller_phone,
-        "transcript_file": transcript_file,
-        "entities": entities.to_dict(),
-        "lookup": lookup_result.to_dict(),
-        "bot_response": bot_response.to_dict(),
-        "validation": validation_result.to_dict(),
-        "response_validation": [
-            item.to_dict() for item in response_validation
-        ],
-    }
+    #     return{
+    #     "conversation_id": conversation_id,
+    #     "caller_phone": caller_phone,
+    #     "transcript_file": transcript_file,
+    #     "entities": entities.to_dict(),
+    #     "lookup": lookup_result.to_dict(),
+    #     "bot_response": bot_response.to_dict(),
+    #     "validation": validation_result.to_dict(),
+    #     "response_validation": [
+    #         item.to_dict() for item in response_validation
+    #     ],
+    # }
+        return {
+            "conversation_id": conversation_id,
+            "caller_phone": caller_phone,
+            "transcript_file": transcript_file,
+            "entities": entities.to_dict(),
+            "lookup": lookup_result.to_dict(),
+            "bot_response": bot_response.to_dict(),
+            "validation": validation_result.to_dict()
+        }
 
     def run_and_write_reports(
         self,

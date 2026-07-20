@@ -5,56 +5,76 @@ from typing import Optional
 from database.provider import DatabaseProvider
 from database.repository import OrderRepository
 from database.session import create_session_factory
-from models.customer import Customer
-from models.order import Order
+from models.lookup import LookupResult
 
 
 class MySQLDatabaseProvider(DatabaseProvider):
-    def __init__(self, connection_url: str, echo: bool = False) -> None:
-        self.connection_url = connection_url
-        self.echo = echo
-        self.session_factory = create_session_factory(connection_url, echo=echo)
+    """
+    Database provider backed by MySQL.
+    """
 
-    def _repo(self) -> OrderRepository:
-        session = self.session_factory()
-        return OrderRepository(session)
+    def __init__(
+        self,
+        connection_url: Optional[str] = None,
+        echo: bool = False,
+    ):
 
-    def find_customer_by_phone(self, phone: str) -> Optional[Customer]:
-        session = self.session_factory()
-        try:
-            repo = OrderRepository(session)
-            return repo.find_customer_by_phone(phone)
-        finally:
-            session.close()
+        SessionFactory = create_session_factory(
+            connection_url=connection_url,
+            echo=echo,
+        )
+        self.session = SessionFactory()
 
-    def find_customer_by_mobile(self, mobile: str) -> Optional[Customer]:
-        session = self.session_factory()
-        try:
-            repo = OrderRepository(session)
-            return repo.find_customer_by_mobile(mobile)
-        finally:
-            session.close()
+        self.repository = OrderRepository(self.session)
 
-    def find_customer_by_email(self, email: str) -> Optional[Customer]:
-        session = self.session_factory()
-        try:
-            repo = OrderRepository(session)
-            return repo.find_customer_by_email(email)
-        finally:
-            session.close()
+    def lookup(self, request) -> LookupResult:
+        """
+        Fetch customer, order and all sub-order items.
+        """
 
-    def find_order_by_order_number(self, order_number: str) -> Optional[Order]:
-        session = self.session_factory()
-        try:
-            repo = OrderRepository(session)
-            return repo.find_order_by_order_number(order_number)
-        finally:
-            session.close()
+        # -----------------------------------
+        # Customer
+        # -----------------------------------
 
-    def find_latest_order_for_customer(self, site_user_id: int) -> Optional[Order]:
-        session = self.session_factory()
-        try:
-            repo = OrderRepository(session)
-            return repo.find_latest_order_for_customer(site_user_id)
-        finally:
-            session.close()
+        customer = self.repository.find_customer(
+            caller_phone=request.caller_phone,
+            customer_phone=request.customer_phone,
+            customer_mobile=request.customer_mobile,
+            customer_email=request.customer_email,
+        )
+
+        if not customer:
+            return LookupResult()
+
+        # -----------------------------------
+        # Order
+        # -----------------------------------
+
+        order = self.repository.find_order(
+            site_user_id=customer.site_user_id,
+            order_number=request.order_number,
+        )
+
+        if not order:
+            return LookupResult(
+                customer=customer,
+                order=None,
+                order_items=[],
+            )
+        # -----------------------------------
+        # Order Items
+        # -----------------------------------
+
+        order_items = self.repository.get_order_items(
+            order.order_id,
+        )
+
+        return LookupResult(
+            customer=customer,
+            order=order,
+            order_items=order_items,
+        )
+
+    def close(self):
+
+        self.session.close()

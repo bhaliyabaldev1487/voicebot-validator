@@ -36,12 +36,8 @@ class BotResponseExtractor:
 
         response = BotOrderResponse()
 
-        bot_text = ""
-
-        for seg in transcript.segments:
-
-            if seg.speaker.upper() == "BOT":
-                bot_text += " " + seg.text
+        # Your ParsedTranscript already provides this property
+        bot_text = transcript.bot_text
 
         order = self.ORDER_PATTERN.search(bot_text)
 
@@ -49,7 +45,7 @@ class BotResponseExtractor:
             response.order_number = order.group(1)
 
         for status in self.STATUS:
-
+            
             if status.lower() in bot_text.lower():
                 response.order_status = status
                 break

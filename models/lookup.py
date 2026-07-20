@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import List, Optional
 
 from models.customer import Customer
 from models.order import Order
+from models.order_item import OrderItem
 
 
 @dataclass
@@ -18,11 +19,14 @@ class OrderLookupRequest:
 
 @dataclass
 class LookupResult:
-    success: bool
-    customer: Optional[Customer]
-    order: Optional[Order]
-    lookup_method: Optional[str]
-    message: str
+    customer: Optional[Customer] = None
+    order: Optional[Order] = None
+    order_items: List[OrderItem] = field(default_factory=list)
+
+    # Optional compatibility fields
+    success: bool = False
+    lookup_method: Optional[str] = None
+    message: str = ""
 
     def to_dict(self):
         return {
@@ -31,4 +35,7 @@ class LookupResult:
             "message": self.message,
             "customer": self.customer.to_dict() if self.customer else None,
             "order": self.order.to_dict() if self.order else None,
+            "order_items": [
+                item.to_dict() for item in self.order_items
+            ],
         }

@@ -137,17 +137,30 @@ def main() -> int:
         print("\n=== Voicebot Order Validation Completed ===")
         print(f"Transcript : {transcript_file}")
         print(f"Success    : {result['validation']['success']}")
-        print(f"Summary    : {result['validation']['summary']}")
+        # print(f"Summary    : {result['validation']['summary']}")
+        validation = result["validation"]
 
+        print(
+            f"Summary    : "
+            f"{validation['passed']}/"
+            f"{validation['passed'] + validation['failed']} checks passed"
+        )
+
+        print(f"Score      : {validation['score']}%")
+        
         report_files = result.get("report_files", {})
         if report_files:
             print(f"JSON Report: {report_files.get('json')}")
             print(f"HTML Report: {report_files.get('html')}")
 
         print("\nChecks:")
+
+        import json
+
+        print(json.dumps(result["validation"], indent=2))
         for check in result["validation"]["checks"]:
             status = "PASS" if check["passed"] else "FAIL"
-            print(f" - [{status}] {check['name']}")
+            print(f" - [{status}] {check['field_name']}")
             if check.get("expected"):
                 print(f"     expected: {check['expected']}")
             if check.get("actual"):

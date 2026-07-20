@@ -1,15 +1,18 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+from typing import Optional
 
 
 @dataclass
 class ValidationEvidence:
+    """
+    Represents one validation result produced by a rule.
+    """
 
     field_name: str
-
     expected: str
-
     actual: str
-
     passed: bool
 
     severity: str = "MEDIUM"
@@ -23,25 +26,4 @@ class ValidationEvidence:
     bot_sentence: str = ""
 
     def to_dict(self):
-
-        return {
-
-            "field": self.field_name,
-
-            "expected": self.expected,
-
-            "actual": self.actual,
-
-            "passed": self.passed,
-
-            "severity": self.severity,
-
-            "confidence": self.confidence,
-
-            "details": self.details,
-
-            "db_column": self.db_column,
-
-            "bot_sentence": self.bot_sentence,
-
-        }
+        return asdict(self)

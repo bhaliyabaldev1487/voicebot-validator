@@ -77,10 +77,10 @@
   <h1>Voicebot Order Validation Report</h1>
 
   <div class="card">
-    <div class="status pass">PASSED</div>
+    <div class="status fail">FAILED</div>
     <h2 class="section-title">Validation Summary</h2>
-    <p><strong>Summary:</strong> 2/2 checks passed</p>
-    <p><strong>Passed checks:</strong> 2</p>
+    <p><strong>Summary:</strong> 2/3 checks passed</p>
+    <p><strong>Passed checks:</strong> 0</p>
     <p><strong>Failed checks:</strong> 0</p>
   </div>
 
@@ -94,7 +94,7 @@
     
 <table>
   <tbody>
-    <tr><th>order_number</th><td></td></tr><tr><th>customer_email</th><td></td></tr><tr><th>customer_phone</th><td>8446335322</td></tr><tr><th>customer_mobile</th><td>8446335322</td></tr><tr><th>intent</th><td></td></tr>
+    <tr><th>order_number</th><td>THAT</td></tr><tr><th>customer_email</th><td></td></tr><tr><th>customer_phone</th><td>91829190318</td></tr><tr><th>customer_mobile</th><td>91829190318</td></tr><tr><th>intent</th><td>order</td></tr>
   </tbody>
 </table>
 
@@ -106,7 +106,7 @@
     
 <table>
   <tbody>
-    <tr><th>success</th><td>True</td></tr><tr><th>lookup_method</th><td>customer</td></tr><tr><th>message</th><td>Customer and order found</td></tr>
+    <tr><th>success</th><td>False</td></tr><tr><th>lookup_method</th><td></td></tr><tr><th>message</th><td></td></tr>
   </tbody>
 </table>
 
@@ -115,7 +115,7 @@
     
 <table>
   <tbody>
-    <tr><th>site_user_id</th><td>285873</td></tr><tr><th>first_name</th><td>Baldev Bhaliya</td></tr><tr><th>last_name</th><td>Testing</td></tr><tr><th>full_name</th><td>Baldev Bhaliya Testing</td></tr><tr><th>email</th><td>baldev111@azafashions.com</td></tr><tr><th>phone_no</th><td>8446335322</td></tr><tr><th>mobile</th><td></td></tr>
+    <tr><th>site_user_id</th><td>199805</td></tr><tr><th>first_name</th><td>Sufiyan</td></tr><tr><th>last_name</th><td></td></tr><tr><th>full_name</th><td>Sufiyan</td></tr><tr><th>email</th><td>chorwadwala.sufiyan@gmail.com</td></tr><tr><th>phone_no</th><td>9769885260</td></tr><tr><th>mobile</th><td></td></tr>
   </tbody>
 </table>
 
@@ -124,7 +124,7 @@
     
 <table>
   <tbody>
-    <tr><th>order_id</th><td>572917</td></tr><tr><th>customer_order_number</th><td>2CCAHDD8</td></tr><tr><th>site_user_id</th><td>285873</td></tr><tr><th>order_status</th><td>PROCESSING</td></tr><tr><th>shipping_status</th><td>PROCESSING</td></tr><tr><th>payment_status</th><td>SUCCESS</td></tr><tr><th>total_price</th><td>31935</td></tr><tr><th>date_added</th><td>2026-03-10 17:58:52</td></tr>
+    <tr><th>order_id</th><td>565104</td></tr><tr><th>customer_order_number</th><td>UOYSTD77</td></tr><tr><th>site_user_id</th><td>199805</td></tr><tr><th>order_status</th><td>PROCESSING</td></tr><tr><th>shipping_status</th><td>PROCESSING</td></tr><tr><th>payment_status</th><td>SUCCESS</td></tr><tr><th>total_price</th><td>146012.57</td></tr><tr><th>date_added</th><td>2025-03-27 16:38:18</td></tr>
   </tbody>
 </table>
 
@@ -146,18 +146,26 @@
   <tbody>
     
 <tr>
-  <td>Customer Found</td>
-  <td class="check-pass">PASS</td>
-  <td>Customer exists</td>
-  <td>Found</td>
   <td></td>
+  <td class="check-pass">PASS</td>
+  <td>Customer should exist</td>
+  <td>Found</td>
+  <td>Customer lookup validation</td>
 </tr>
 
 <tr>
-  <td>Order Found</td>
+  <td></td>
   <td class="check-pass">PASS</td>
-  <td>Order exists</td>
+  <td>Order should exist</td>
   <td>Found</td>
+  <td>Order lookup validation</td>
+</tr>
+
+<tr>
+  <td></td>
+  <td class="check-fail">FAIL</td>
+  <td>PROCESSING</td>
+  <td></td>
   <td></td>
 </tr>
 

@@ -1,3 +1,7 @@
+"""
+Order existence validation rule.
+"""
+
 from models.validation_evidence import ValidationEvidence
 from validators.rules.base_rule import ValidationRule
 
@@ -9,14 +13,11 @@ class OrderExistsRule(ValidationRule):
         order = context.lookup_result.order
 
         return ValidationEvidence(
-
             field_name="Order Exists",
-
-            expected="Order",
-
+            expected="Order should exist",
             actual="Found" if order else "Not Found",
-
             passed=order is not None,
-
             severity="CRITICAL",
+            db_column="mx_order.order_id",
+            details="Order lookup validation",
         )

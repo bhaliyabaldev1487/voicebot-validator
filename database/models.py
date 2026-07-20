@@ -62,3 +62,19 @@ class Order(Base):
             f"siteUserID={self.siteUserID}, "
             f"orderStatus={self.orderStatus!r})"
         )
+class OrderDetail(Base):
+
+    __tablename__ = "mx_order_details"
+
+    order_detail_id = mapped_column("orderDetailID", Integer, primary_key=True)
+    order_id = mapped_column("orderID", Integer)
+    product_title = mapped_column("productTitle", String)
+    aza_code = mapped_column("azaOnlineCode", String)
+    quantity = mapped_column("quantity", Integer)
+    shipping_status = mapped_column("shippingStatus", String)
+    courier = mapped_column("shippingCompanyName", String)
+    tracking_id = mapped_column("trackingID", String)
+    expected_delivery_date = mapped_column("expectedDeliveryDate", DateTime)
+    designer_name = mapped_column("designerName", String)
+    color = mapped_column("colorTitle", String)
+    size = mapped_column("sizeTitle", String)

@@ -1,32 +1,33 @@
 STATUS_SYNONYMS = {
+
     "PROCESSING": [
         "processing",
         "being processed",
+        "currently processing",
         "under process",
-        "being prepared",
-        "packing",
-        "preparing your order",
+        "in process",
     ],
 
     "SHIPPING": [
         "shipped",
+        "shipping",
         "dispatched",
+        "out for delivery",
         "on the way",
         "in transit",
-        "left warehouse",
-        "shipment is on the way",
     ],
 
     "DELIVERED": [
         "delivered",
+        "successfully delivered",
         "already delivered",
         "received",
-        "completed delivery",
     ],
 
     "CANCELLED": [
         "cancelled",
         "canceled",
         "order cancelled",
+        "order canceled",
     ],
 }

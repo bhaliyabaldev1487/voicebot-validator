@@ -1,57 +1,134 @@
 {
   "conversation_id": "call_001",
   "caller_phone": "9769885260",
-  "transcript_file": "bot_conv.json",
+  "transcript_file": "bot-conv-order-status.json",
   "entities": {
-    "order_number": null,
+    "order_number": "THAT",
     "customer_email": null,
-    "customer_phone": "8446335322",
-    "customer_mobile": "8446335322",
-    "intent": null
+    "customer_phone": "91829190318",
+    "customer_mobile": "91829190318",
+    "intent": "order"
   },
   "lookup": {
-    "success": true,
-    "lookup_method": "customer",
-    "message": "Customer and order found",
+    "success": false,
+    "lookup_method": null,
+    "message": "",
     "customer": {
-      "site_user_id": 285873,
-      "first_name": "Baldev Bhaliya",
-      "last_name": "Testing",
-      "full_name": "Baldev Bhaliya Testing",
-      "email": "baldev111@azafashions.com",
-      "phone_no": "8446335322",
+      "site_user_id": 199805,
+      "first_name": "Sufiyan",
+      "last_name": "",
+      "full_name": "Sufiyan",
+      "email": "chorwadwala.sufiyan@gmail.com",
+      "phone_no": "9769885260",
       "mobile": ""
     },
     "order": {
-      "order_id": 572917,
-      "customer_order_number": "2CCAHDD8",
-      "site_user_id": 285873,
+      "order_id": 565104,
+      "customer_order_number": "UOYSTD77",
+      "site_user_id": 199805,
       "order_status": "PROCESSING",
       "shipping_status": "PROCESSING",
       "payment_status": "SUCCESS",
-      "total_price": "31935",
-      "date_added": "2026-03-10 17:58:52"
-    }
-  },
-  "validation": {
-    "success": true,
-    "summary": "2/2 checks passed",
-    "passed_checks": 2,
-    "failed_checks": 0,
-    "checks": [
+      "total_price": "146012.57",
+      "date_added": "2025-03-27 16:38:18"
+    },
+    "order_items": [
       {
-        "name": "Customer Found",
-        "passed": true,
-        "expected": "Customer exists",
-        "actual": "Found",
-        "details": null
+        "order_detail_id": 1082622,
+        "order_id": 565104,
+        "product_title": "Embroidered Red Lehenga Set With Dupatta",
+        "aza_code": "P443505",
+        "quantity": 1,
+        "shipping_status": "CANCELED",
+        "courier": "",
+        "tracking_id": "",
+        "expected_delivery_date": "2025-04-22 00:00:00",
+        "designer_name": "Aariyana Couture",
+        "color": "",
+        "size": "S"
       },
       {
-        "name": "Order Found",
-        "passed": true,
-        "expected": "Order exists",
+        "order_detail_id": 1082623,
+        "order_id": 565104,
+        "product_title": "Chanderi Silk Anarkali Set",
+        "aza_code": "P443506",
+        "quantity": 1,
+        "shipping_status": "CANCELED",
+        "courier": "",
+        "tracking_id": "",
+        "expected_delivery_date": "2025-05-14 00:00:00",
+        "designer_name": "Rohit Bal",
+        "color": "",
+        "size": "XS"
+      },
+      {
+        "order_detail_id": 1082624,
+        "order_id": 565104,
+        "product_title": "Gold Floral Kundan Pearl Drop Earrings",
+        "aza_code": "P443507",
+        "quantity": 1,
+        "shipping_status": "CANCELED",
+        "courier": "",
+        "tracking_id": "",
+        "expected_delivery_date": "2025-04-09 00:00:00",
+        "designer_name": "Dugran By Dugristyle",
+        "color": "",
+        "size": "FREE SIZE"
+      }
+    ]
+  },
+  "bot_response": {
+    "order_number": null,
+    "order_status": null,
+    "payment_status": null,
+    "courier": null,
+    "tracking_number": null,
+    "delivery_date": null,
+    "total_amount": null,
+    "currency": null,
+    "shipping_city": null,
+    "shipping_state": null,
+    "shipping_pincode": null
+  },
+  "validation": {
+    "success": false,
+    "summary": "2/3 checks passed",
+    "score": 66.67,
+    "passed": 2,
+    "failed": 1,
+    "checks": [
+      {
+        "field_name": "Customer Exists",
+        "expected": "Customer should exist",
         "actual": "Found",
-        "details": null
+        "passed": true,
+        "severity": "CRITICAL",
+        "confidence": 1.0,
+        "details": "Customer lookup validation",
+        "db_column": "mx_site_user.site_user_id",
+        "bot_sentence": ""
+      },
+      {
+        "field_name": "Order Exists",
+        "expected": "Order should exist",
+        "actual": "Found",
+        "passed": true,
+        "severity": "CRITICAL",
+        "confidence": 1.0,
+        "details": "Order lookup validation",
+        "db_column": "mx_order.order_id",
+        "bot_sentence": ""
+      },
+      {
+        "field_name": "Order Status",
+        "expected": "PROCESSING",
+        "actual": "",
+        "passed": false,
+        "severity": "CRITICAL",
+        "confidence": 1.0,
+        "details": "",
+        "db_column": "mx_order.orderStatus",
+        "bot_sentence": ""
       }
     ]
   }

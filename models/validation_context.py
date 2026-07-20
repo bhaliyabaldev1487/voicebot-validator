@@ -23,7 +23,6 @@ class ValidationContext:
     transcript: ParsedTranscript
     entities: OrderEntities
     lookup_result: LookupResult
-
     # NEW
     bot_response: Optional[BotOrderResponse] = None
 

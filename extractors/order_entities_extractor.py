@@ -15,9 +15,8 @@ Later we can upgrade it with LLM/NER if needed.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Optional
-
 
 # ----------------------------------------------------------------------
 # Extracted entities
@@ -36,6 +35,8 @@ class OrderEntities:
     customer_mobile: Optional[str] = None
     intent: Optional[str] = None
 
+    def to_dict(self):
+        return asdict(self)
 
 # ----------------------------------------------------------------------
 # Extractor

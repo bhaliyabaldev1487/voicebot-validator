@@ -6,6 +6,7 @@ from database.models import Order as OrderORM
 from database.models import SiteUser
 from models.customer import Customer
 from models.order import Order
+from models.order_item import OrderItem
 
 
 def _to_decimal(value: object) -> Decimal:
@@ -37,4 +38,21 @@ def to_order(row: OrderORM) -> Order:
         payment_status=row.paymentStatus,
         total_price=_to_decimal(row.totalPrice),
         date_added=str(row.dateAdded) if row.dateAdded else None,
+    )
+
+def map_order_item(row):
+
+    return OrderItem(
+        order_detail_id=row.order_detail_id,
+        order_id=row.order_id,
+        product_title=row.product_title,
+        aza_code=row.aza_code,
+        quantity=row.quantity,
+        shipping_status=row.shipping_status,
+        courier=row.courier,
+        tracking_id=row.tracking_id,
+        expected_delivery_date=row.expected_delivery_date,
+        designer_name=row.designer_name,
+        color=row.color,
+        size=row.size,
     )

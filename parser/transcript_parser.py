@@ -57,6 +57,9 @@ class TranscriptParser:
             turn = self._segment_to_turn(segment, resolution.mapping)
             if turn:
                 turns.append(turn)
+                print(
+                    f"[{turn.speaker.upper():9}] {turn.text}"
+                )
 
         return ParsedTranscript(turns=turns)
 

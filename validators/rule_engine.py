@@ -1,34 +1,44 @@
+"""
+Executes all validation rules.
+"""
+
+from __future__ import annotations
+
 from typing import List
 
 from models.validation_context import ValidationContext
 from models.validation_evidence import ValidationEvidence
-from validators.rules.base_rule import ValidationRule
 from models.validation_result import ValidationResult
+from validators.rules.base_rule import ValidationRule
+
 
 class RuleEngine:
 
-    def __init__(self, rules: List[ValidationRule]):
+    def __init__(
+        self,
+        rules: List[ValidationRule],
+    ):
         self.rules = rules
 
     def execute(
         self,
         context: ValidationContext,
-    ) -> List[ValidationEvidence]:
+    ) -> ValidationResult:
 
-        evidence = []
+        result = ValidationResult()
 
         for rule in self.rules:
 
             try:
 
-                result = rule.validate(context)
+                evidence = rule.validate(context)
 
-                if result:
-                    evidence.append(result)
+                if evidence:
+                    result.checks.append(evidence)
 
             except Exception as ex:
 
-                evidence.append(
+                result.checks.append(
                     ValidationEvidence(
                         field_name=rule.__class__.__name__,
                         expected="",
@@ -39,6 +49,4 @@ class RuleEngine:
                     )
                 )
 
-        return ValidationResult(
-            checks=evidence,
-        )
+        return result
