@@ -111,7 +111,10 @@ class TranscriptParser:
         # if not text:
         #     return None
 
-        speaker = self._normalize_speaker(segment, speaker_mapping)
+        speaker = self._normalize_speaker(
+            segment, 
+            speaker_mapping
+        )
 
         # return TranscriptTurn(
         #     speaker=speaker,
