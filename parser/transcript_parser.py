@@ -51,6 +51,16 @@ class TranscriptParser:
 
         # Resolve speaker_00 / speaker_01 etc. into bot/customer
         resolution = self.role_resolver.resolve(segments)
+        print("\n========== SPEAKER MAPPING ==========")
+
+        for speaker, role in resolution.mapping.items():
+
+            print(
+                f"{speaker:<15} -> {role:<10}"
+                f"{resolution.get_confidence(speaker):.2f}"
+            )
+
+        print("=====================================\n")
 
         turns: List[TranscriptTurn] = []
         for segment in segments:
@@ -97,18 +107,18 @@ class TranscriptParser:
         """
         Convert one transcript segment into TranscriptTurn.
         """
-        text = self._clean_text(segment.get("text", ""))
-        if not text:
-            return None
+        # text = self._clean_text(segment.get("text", ""))
+        # if not text:
+        #     return None
 
         speaker = self._normalize_speaker(segment, speaker_mapping)
 
-        return TranscriptTurn(
-            speaker=speaker,
-            text=text,
-            start=self._to_float(segment.get("start")),
-            end=self._to_float(segment.get("end")),
-        )
+        # return TranscriptTurn(
+        #     speaker=speaker,
+        #     text=text,
+        #     start=self._to_float(segment.get("start")),
+        #     end=self._to_float(segment.get("end")),
+        # )
 
     def _normalize_speaker(
         self,

@@ -25,18 +25,34 @@ class ConversationClassifier:
                 profile.role = "unknown"
                 continue
 
-            if profile.bot_score >= profile.customer_score:
+            # if profile.bot_score >= profile.customer_score:
+            #     profile.role = "bot"
+            #     profile.confidence = (
+            #         profile.bot_score / total
+            #     )
+            # else:
+            #     profile.role = "customer"
+            #     profile.confidence = (
+            #         profile.customer_score / total
+            #     )
 
+            difference = abs(
+                profile.bot_score -
+                profile.customer_score
+            )
+
+            total = (
+                profile.bot_score +
+                profile.customer_score
+            )
+
+            if total == 0:
+                profile.role = "unknown"
+                profile.confidence = 0
+            elif profile.bot_score > profile.customer_score:
                 profile.role = "bot"
-
-                profile.confidence = (
-                    profile.bot_score / total
-                )
-
+                profile.confidence = difference / total
             else:
-
                 profile.role = "customer"
-
-                profile.confidence = (
-                    profile.customer_score / total
-                )
+                profile.confidence = difference / total
+                

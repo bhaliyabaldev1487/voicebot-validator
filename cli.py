@@ -17,6 +17,7 @@ Environment:
 """
 
 from __future__ import annotations
+from utils.logger import configure_logging
 
 import argparse
 import json
@@ -27,6 +28,7 @@ from typing import Optional
 
 from runner.order_validation_runner import OrderValidationRunner
 
+configure_logging()
 
 DEFAULT_OUTPUT_DIR = "reports"
 ENV_DB_URL = "VOICEBOT_DB_URL"
