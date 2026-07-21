@@ -1,54 +1,25 @@
-import re
-
-BOT_PATTERNS = {
-
-    r"hello":10,
-
-    r"welcome":10,
-
-    r"how can i help":25,
-
-    r"how may i help":25,
-
-    r"english or arabic":40,
-
-    r"please share":20,
-
-    r"please provide":20,
-
-    r"please confirm":20,
-
-    r"would you like":15,
-
-    r"let me check":20,
-
-    r"one moment":15,
-
-    r"thank you for calling":25,
-
-    r"thank you for letting me know":20,
-
-    r"anything else":15,
-
-    r"please stay connected":15,
-
-    r"here is the whatsapp number":30,
-
-}
+from models.speaker_profile import SpeakerProfile
 
 
 class BotClassifier:
 
-    def score(self, profile):
+    def score(self, profile: SpeakerProfile) -> float:
 
-        score = 0
+        score = 0.0
 
-        text = profile.full_text
+        score += profile.greeting_count * 5
+        score += profile.help_count * 5
+        score += profile.language_selection_count * 4
 
-        for pattern, weight in BOT_PATTERNS.items():
+        if profile.average_length > 8:
+            score += 3
 
-            if re.search(pattern, text):
+        if profile.question_count == 0:
+            score += 2
 
-                score += weight
+        if profile.order_mentions > 0:
+            score += 2
+
+        profile.bot_score = score
 
         return score

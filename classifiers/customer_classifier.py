@@ -1,50 +1,25 @@
-import re
-
-CUSTOMER_PATTERNS = {
-
-    r"my order number":30,
-
-    r"my order":15,
-
-    r"where is my order":25,
-
-    r"i placed":15,
-
-    r"i received":10,
-
-    r"i didn't receive":25,
-
-    r"my email":15,
-
-    r"my phone":15,
-
-    r"my mobile":15,
-
-    r"can you check":15,
-
-    r"can you tell":15,
-
-    r"i want":10,
-
-    r"i need":10,
-
-    r"when will":10,
-
-}
+from models.speaker_profile import SpeakerProfile
 
 
 class CustomerClassifier:
 
-    def score(self, profile):
+    def score(self, profile: SpeakerProfile) -> float:
 
-        score = 0
+        score = 0.0
 
-        text = profile.full_text
+        score += profile.question_count * 5
 
-        for pattern, weight in CUSTOMER_PATTERNS.items():
+        score += profile.order_mentions * 3
 
-            if re.search(pattern, text):
+        score += profile.refund_mentions * 3
 
-                score += weight
+        score += profile.email_mentions * 2
+
+        score += profile.phone_mentions * 2
+
+        if profile.average_length < 15:
+            score += 1
+
+        profile.customer_score = score
 
         return score
