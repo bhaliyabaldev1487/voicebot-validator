@@ -6,26 +6,28 @@ from typing import Dict
 
 @dataclass
 class SpeakerRoleResolution:
-    """
-    Final mapping between diarized speakers and semantic roles.
-
-    Example:
-        speaker_00 -> bot
-        speaker_01 -> bot
-        speaker_02 -> bot
-        speaker_03 -> customer
-    """
-
     mapping: Dict[str, str]
 
-    def resolve(self, speaker: str) -> str:
-        if not speaker:
-            return "unknown"
+    confidence: Dict[str, float]
 
+    def resolve(self, speaker: str) -> str:
         return self.mapping.get(
             speaker.lower(),
             "unknown",
         )
 
+    def get_confidence(self, speaker: str) -> float:
+
+        return self.confidence.get(
+            speaker.lower(),
+            0.0,
+        )
+
     def to_dict(self):
-        return self.mapping
+
+        return {
+
+            "mapping": self.mapping,
+
+            "confidence": self.confidence,
+        }

@@ -1,82 +1,77 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
 class SpeakerProfile:
-    """
-    Aggregated information for a single speaker across
-    the entire conversation.
 
-    Example:
+    speaker_id: str
 
-        SPEAKER_00
-            Hello...
-            English or Arabic?
-            Please share your order number.
+    utterances: List[str] = field(default_factory=list)
 
-        ->
-            role = BOT
-    """
+    total_words: int = 0
 
-    speaker: str
+    question_count: int = 0
 
-    utterances: list[str] = field(default_factory=list)
+    greeting_count: int = 0
 
-    bot_score: int = 0
+    help_count: int = 0
 
-    customer_score: int = 0
+    order_mentions: int = 0
+
+    email_mentions: int = 0
+
+    phone_mentions: int = 0
+
+    tracking_mentions: int = 0
+
+    refund_mentions: int = 0
+
+    return_mentions: int = 0
+
+    language_selection_count: int = 0
+
+    average_length: float = 0.0
+
+    bot_score: float = 0.0
+
+    customer_score: float = 0.0
+
+    confidence: float = 0.0
 
     role: str = "unknown"
 
-    @property
-    def full_text(self) -> str:
-        """
-        Entire conversation spoken by this speaker.
-        """
-        return " ".join(self.utterances).lower()
+    def add(self, text: str):
 
-    def add(self, text: str) -> None:
-        """
-        Add one utterance.
-        """
-        if text:
-            self.utterances.append(text.strip())
+        self.utterances.append(text)
 
-    def add_bot(self, score: int = 1) -> None:
-        self.bot_score += score
+        words = text.split()
 
-    def add_customer(self, score: int = 1) -> None:
-        self.customer_score += score
+        self.total_words += len(words)
 
-    @property
-    def utterance_count(self) -> int:
-        return len(self.utterances)
+        self.average_length = (
+            self.total_words / len(self.utterances)
+            if self.utterances
+            else 0
+        )
 
-    def decide_role(self) -> str:
-        """
-        Decide final role.
-        """
-
-        if self.bot_score > self.customer_score:
-            self.role = "bot"
-
-        elif self.customer_score > self.bot_score:
-            self.role = "customer"
-
-        else:
-            self.role = "unknown"
-
-        return self.role
-
-    def to_dict(self) -> dict:
+    def to_dict(self):
 
         return {
-            "speaker": self.speaker,
-            "utterance_count": self.utterance_count,
-            "bot_score": self.bot_score,
-            "customer_score": self.customer_score,
+
+            "speaker": self.speaker_id,
+
             "role": self.role,
-            "utterances": self.utterances,
+
+            "utterances": len(self.utterances),
+
+            "avg_length": round(self.average_length, 2),
+
+            "bot_score": self.bot_score,
+
+            "customer_score": self.customer_score,
+
+            "confidence": self.confidence,
         }
