@@ -42,6 +42,15 @@ class SpeakerProfileBuilder:
         "hindi",
     }
 
+    BOT_REPEAT_PATTERNS = [
+        "how can i help",
+        "hello",
+        "are you still there",
+        "please hold",
+        "thank you for calling",
+        "anything else i can help",
+    ]
+
     EMAIL_REGEX = re.compile(r"\S+@\S+\.\S+")
 
     PHONE_REGEX = re.compile(r"\d{10}")
@@ -68,7 +77,9 @@ class SpeakerProfileBuilder:
             if not text:
                 continue
 
-            profile.add(text)
+            # profile.add(text)
+            profile.conversation_text += " " + text
+            profile.total_turns += 1
 
             lower = text.lower()
 

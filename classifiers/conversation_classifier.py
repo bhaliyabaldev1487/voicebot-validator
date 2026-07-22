@@ -1,58 +1,62 @@
-from typing import Dict
+from __future__ import annotations
+
+from collections import Counter
+from typing import Dict, List
 
 from models.speaker_profile import SpeakerProfile
 
 
-class ConversationClassifier:
+class ConversationFlow:
+
+    """
+    Analyses overall conversation flow.
+
+    Produces additional confidence for each speaker.
+
+    It does NOT assign BOT/CUSTOMER.
+    It only boosts confidence using conversation statistics.
+    """
 
     def score(
         self,
+        segments: List[dict],
         profiles: Dict[str, SpeakerProfile],
-    ):
+    ) -> None:
 
-        if len(profiles) <= 1:
+        if not segments:
             return
 
-        for profile in profiles.values():
+        speaker_sequence = []
 
-            total = (
-                profile.bot_score +
-                profile.customer_score
+        for segment in segments:
+
+            speaker = (
+                segment.get("speaker")
+                or segment.get("speaker_label")
+                or ""
+            ).lower()
+
+            if speaker:
+                speaker_sequence.append(speaker)
+
+        counts = Counter(speaker_sequence)
+
+        total_turns = len(speaker_sequence)
+
+        if total_turns == 0:
+            return
+
+        for speaker, profile in profiles.items():
+
+            profile.conversation_position = (
+                counts[speaker] / total_turns
             )
 
-            if total == 0:
-                profile.confidence = 0
-                profile.role = "unknown"
-                continue
+            # Speakers dominating the conversation
+            # are slightly more likely to be BOT.
+            if profile.conversation_position > 0.45:
+                profile.bot_score += 2
 
-            # if profile.bot_score >= profile.customer_score:
-            #     profile.role = "bot"
-            #     profile.confidence = (
-            #         profile.bot_score / total
-            #     )
-            # else:
-            #     profile.role = "customer"
-            #     profile.confidence = (
-            #         profile.customer_score / total
-            #     )
-
-            difference = abs(
-                profile.bot_score -
-                profile.customer_score
-            )
-
-            total = (
-                profile.bot_score +
-                profile.customer_score
-            )
-
-            if total == 0:
-                profile.role = "unknown"
-                profile.confidence = 0
-            elif profile.bot_score > profile.customer_score:
-                profile.role = "bot"
-                profile.confidence = difference / total
-            else:
-                profile.role = "customer"
-                profile.confidence = difference / total
-                
+            # Few turns usually indicate customer.
+            elif profile.conversation_position < 0.25:
+                profile.customer_score += 1

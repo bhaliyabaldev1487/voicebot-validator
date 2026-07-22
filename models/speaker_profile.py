@@ -43,6 +43,24 @@ class SpeakerProfile:
 
     role: str = "unknown"
 
+    conversation_text: str = ""
+
+    total_turns: int = 0
+
+    first_timestamp: float | None = None
+
+    last_timestamp: float | None = None
+
+    script_repetition: int = 0
+
+    avg_words_per_turn: float = 0
+
+    greeting_ratio: float = 0
+
+    question_ratio: float = 0
+
+    conversation_position: float = 0
+
     def add(self, text: str):
 
         self.utterances.append(text)
@@ -75,3 +93,22 @@ class SpeakerProfile:
 
             "confidence": self.confidence,
         }
+    
+    def finalize(self):
+
+        if self.total_turns:
+
+            self.avg_words_per_turn = (
+                self.total_words /
+                self.total_turns
+            )
+
+            self.question_ratio = (
+                self.question_count /
+                self.total_turns
+            )
+
+            self.greeting_ratio = (
+                self.greeting_count /
+                self.total_turns
+            )

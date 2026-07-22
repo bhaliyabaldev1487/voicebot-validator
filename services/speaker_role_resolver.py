@@ -39,7 +39,8 @@ class SpeakerRoleResolver:
             self.customer_classifier.score(profile)
 
         self.conversation_classifier.score(
-            profiles
+            segments,
+            profiles,
         )
 
         mapping = {}
