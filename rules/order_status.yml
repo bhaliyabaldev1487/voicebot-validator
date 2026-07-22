@@ -1,0 +1,1891 @@
+version: 1.0
+
+category: ORDER_STATUS
+
+description: >
+  Canonical order lifecycle rules for Voicebot Validator.
+  These rules normalize various bot responses into canonical order statuses.
+
+default_confidence: 0.90
+
+statuses:
+
+  UNKNOWN:
+
+    enabled: true
+
+    priority: 1
+
+    confidence: 0.25
+
+    stage: unknown
+
+    aliases:
+      - UNKNOWN
+      - UNIDENTIFIED
+      - NOT_FOUND
+
+    phrases:
+      - i am not sure
+      - i don't know
+      - unable to identify
+      - unable to locate
+      - unable to fetch
+      - sorry i cannot find
+      - i could not find
+      - information unavailable
+      - order information unavailable
+      - status unavailable
+      - no status available
+      - cannot retrieve
+      - system unavailable
+      - service unavailable
+      - please try again later
+      - technical issue
+      - backend error
+      - internal error
+      - unknown status
+      - order not found
+
+    regex:
+      - "(unable|cannot) (find|locate)"
+      - "status unavailable"
+      - "order not found"
+
+    negative: []
+
+    db_values:
+      - UNKNOWN
+      - NULL
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Sorry, I cannot retrieve your order details.
+      - Order information is unavailable right now.
+
+    metadata:
+      customer_visible: true
+
+  ORDER_RECEIVED:
+
+    enabled: true
+
+    priority: 100
+
+    confidence: 0.99
+
+    stage: received
+
+    aliases:
+      - ORDER_RECEIVED
+      - RECEIVED
+      - ORDER_CREATED
+      - ORDER_ACCEPTED
+
+    phrases:
+      - order received
+      - we have received your order
+      - your order has been received
+      - order successfully received
+      - thanks for placing your order
+      - order confirmed
+      - order created
+      - order accepted
+      - purchase successful
+      - your request has been registered
+      - your order is registered
+      - we have your order
+      - thank you for your purchase
+      - order booked
+      - order placed successfully
+      - order has been placed
+      - your purchase is confirmed
+      - we are processing your request
+      - order recorded
+      - your request is accepted
+
+    regex:
+      - "order (received|created|accepted)"
+      - "thank(s)? for placing"
+
+    negative:
+      - order cancelled
+      - failed to place order
+
+    db_values:
+      - RECEIVED
+      - ORDER_RECEIVED
+      - CREATED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been received.
+      - Thanks for placing your order.
+
+    metadata:
+      customer_visible: true
+
+  PAYMENT_PENDING:
+
+    enabled: true
+
+    priority: 95
+
+    confidence: 0.97
+
+    stage: payment
+
+    aliases:
+      - PAYMENT_PENDING
+      - AWAITING_PAYMENT
+      - PAYMENT_WAITING
+
+    phrases:
+      - payment pending
+      - awaiting payment
+      - waiting for payment
+      - payment not received
+      - payment is due
+      - payment yet to be completed
+      - complete your payment
+      - payment required
+      - payment has not been made
+      - payment authorization pending
+      - payment verification pending
+      - waiting for confirmation
+      - awaiting payment confirmation
+      - pending payment verification
+      - payment is still pending
+
+    regex:
+      - "payment.*pending"
+      - "awaiting payment"
+
+    negative:
+      - payment successful
+      - payment completed
+      - payment received
+
+    db_values:
+      - PAYMENT_PENDING
+      - AWAITING_PAYMENT
+
+    expected_bot_entities:
+      - payment_status
+
+    examples:
+      - Your payment is still pending.
+      - We are awaiting payment confirmation.
+
+    metadata:
+      customer_visible: true
+
+  PAYMENT_SUCCESS:
+
+    enabled: true
+
+    priority: 96
+
+    confidence: 0.99
+
+    stage: payment
+
+    aliases:
+      - PAYMENT_SUCCESS
+      - PAID
+      - PAYMENT_RECEIVED
+      - PAYMENT_COMPLETED
+
+    phrases:
+      - payment successful
+      - payment completed
+      - payment received
+      - payment confirmed
+      - amount received
+      - transaction successful
+      - transaction completed
+      - payment verified
+      - your payment has been received
+      - we have received your payment
+      - payment done
+      - payment processed
+      - payment accepted
+      - payment approved
+      - order paid
+      - payment captured
+      - payment posted
+      - payment credited
+
+    regex:
+      - "payment (received|successful|completed)"
+      - "transaction successful"
+
+    negative:
+      - payment failed
+      - payment pending
+      - payment declined
+
+    db_values:
+      - PAID
+      - PAYMENT_SUCCESS
+      - PAYMENT_COMPLETED
+
+    expected_bot_entities:
+      - payment_status
+
+    examples:
+      - Your payment has been received.
+      - Payment completed successfully.
+
+    metadata:
+      customer_visible: true
+
+  PAYMENT_FAILED:
+
+    enabled: true
+
+    priority: 96
+
+    confidence: 0.99
+
+    stage: payment
+
+    aliases:
+      - PAYMENT_FAILED
+      - PAYMENT_DECLINED
+      - PAYMENT_ERROR
+
+    phrases:
+      - payment failed
+      - payment declined
+      - transaction failed
+      - payment unsuccessful
+      - payment rejected
+      - payment could not be processed
+      - transaction declined
+      - authorization failed
+      - payment error
+      - payment timeout
+      - bank declined
+      - payment was cancelled
+      - card declined
+      - payment was unsuccessful
+      - payment not completed
+
+    regex:
+      - "payment (failed|declined)"
+      - "transaction failed"
+
+    negative:
+      - payment successful
+      - payment completed
+
+    db_values:
+      - PAYMENT_FAILED
+      - FAILED
+
+    expected_bot_entities:
+      - payment_status
+
+    examples:
+      - Your payment has failed.
+      - The transaction was declined.
+
+    metadata:
+      customer_visible: true
+
+  PROCESSING:
+
+    enabled: true
+
+    priority: 90
+
+    confidence: 0.98
+
+    stage: fulfillment
+
+    aliases:
+      - PROCESSING
+      - IN_PROGRESS
+      - UNDER_PROCESSING
+
+    phrases:
+      - under processing
+      - currently processing
+      - your order is processing
+      - being processed
+      - processing your order
+      - order is in progress
+      - in progress
+      - preparing your order
+      - preparing your package
+      - preparing your parcel
+      - production started
+      - manufacturing started
+      - stitching started
+      - tailoring started
+      - artisan has started
+      - your outfit is being stitched
+      - your order is being stitched
+      - quality inspection pending
+      - production in progress
+      - order preparation started
+      - warehouse preparing order
+      - production team is working
+      - we are preparing your order
+      - your order is under preparation
+      - preparation is underway
+
+    regex:
+      - "under processing"
+      - "being processed"
+      - "being stitched"
+      - "preparing your order"
+      - "in progress"
+
+    negative:
+      - cancelled
+      - returned
+      - delivered
+      - shipped
+
+    db_values:
+      - PROCESSING
+      - IN_PROGRESS
+      - STITCHING
+      - PREPARING
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order is currently being stitched.
+      - Our production team has started preparing your outfit.
+      - Your order is under processing.
+
+    metadata:
+      customer_visible: true
+      fulfillment: manufacturing
+
+    READY_FOR_QC:
+
+    enabled: true
+
+    priority: 89
+
+    confidence: 0.98
+
+    stage: quality_control
+
+    aliases:
+      - READY_FOR_QC
+      - QC_PENDING
+      - QC_READY
+
+    phrases:
+      - ready for quality check
+      - ready for qc
+      - awaiting quality inspection
+      - waiting for quality inspection
+      - sent for quality check
+      - quality check scheduled
+      - quality control pending
+      - quality assurance pending
+      - inspection pending
+      - product ready for inspection
+      - garment ready for inspection
+      - ready for final inspection
+      - ready for verification
+      - pending quality review
+      - quality review pending
+
+    regex:
+      - "ready.*quality"
+      - "quality.*pending"
+      - "qc"
+
+    negative:
+      - quality check completed
+      - packed
+      - shipped
+      - delivered
+
+    db_values:
+      - READY_FOR_QC
+      - QC_PENDING
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your outfit is ready for quality inspection.
+      - The order is awaiting QC.
+
+    metadata:
+      customer_visible: true
+
+  QUALITY_CHECK:
+
+    enabled: true
+
+    priority: 88
+
+    confidence: 0.99
+
+    stage: quality_control
+
+    aliases:
+      - QUALITY_CHECK
+      - QC_IN_PROGRESS
+      - INSPECTION
+
+    phrases:
+      - quality check in progress
+      - quality inspection in progress
+      - currently under quality check
+      - currently under inspection
+      - being inspected
+      - undergoing quality control
+      - quality team is checking
+      - inspection has started
+      - garment inspection underway
+      - product inspection underway
+      - performing quality verification
+      - quality verification in progress
+      - under quality assurance
+      - final inspection in progress
+      - checking product quality
+      - reviewing garment quality
+      - qc in progress
+      - under qc
+
+    regex:
+      - "quality.*progress"
+      - "inspection.*progress"
+      - "under.*inspection"
+
+    negative:
+      - quality check completed
+      - packed
+      - dispatched
+
+    db_values:
+      - QUALITY_CHECK
+      - QC_IN_PROGRESS
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order is currently under quality inspection.
+      - Our QA team is checking your outfit.
+
+    metadata:
+      customer_visible: true
+
+  QUALITY_CHECK_COMPLETED:
+
+    enabled: true
+
+    priority: 87
+
+    confidence: 0.99
+
+    stage: quality_control
+
+    aliases:
+      - QC_COMPLETED
+      - QUALITY_APPROVED
+      - INSPECTION_COMPLETED
+
+    phrases:
+      - quality check completed
+      - inspection completed
+      - quality approved
+      - passed quality inspection
+      - passed quality check
+      - qc completed
+      - qc passed
+      - quality verification completed
+      - garment approved
+      - product approved
+      - inspection successful
+      - ready after inspection
+      - quality clearance received
+      - quality team approved
+      - inspection finished
+
+    regex:
+      - "quality.*completed"
+      - "passed.*quality"
+
+    negative:
+      - inspection pending
+      - under inspection
+
+    db_values:
+      - QC_COMPLETED
+      - QUALITY_APPROVED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has passed quality inspection.
+      - Quality verification is complete.
+
+    metadata:
+      customer_visible: true
+
+  PACKED:
+
+    enabled: true
+
+    priority: 86
+
+    confidence: 0.99
+
+    stage: warehouse
+
+    aliases:
+      - PACKED
+      - PACKAGE_READY
+      - PACKAGING_COMPLETED
+
+    phrases:
+      - packed
+      - order packed
+      - package packed
+      - parcel packed
+      - packing completed
+      - packaging completed
+      - ready after packing
+      - carefully packed
+      - securely packed
+      - packed successfully
+      - order has been packed
+      - package is ready
+      - parcel is ready
+      - packed and ready
+      - packaging finished
+      - ready for dispatch
+      - warehouse packed your order
+      - your order has been packaged
+
+    regex:
+      - "pack(ed|ing)"
+      - "package.*ready"
+
+    negative:
+      - packing pending
+      - cancelled
+
+    db_values:
+      - PACKED
+      - PACKAGING_COMPLETED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been packed.
+      - Packaging has been completed successfully.
+
+    metadata:
+      customer_visible: true
+
+  DISPATCH_PENDING:
+
+    enabled: true
+
+    priority: 85
+
+    confidence: 0.98
+
+    stage: warehouse
+
+    aliases:
+      - DISPATCH_PENDING
+      - READY_FOR_DISPATCH
+      - AWAITING_DISPATCH
+
+    phrases:
+      - awaiting dispatch
+      - dispatch pending
+      - waiting for dispatch
+      - ready for dispatch
+      - dispatch is scheduled
+      - warehouse will dispatch soon
+      - dispatch in progress
+      - shipment preparation underway
+      - waiting for courier pickup
+      - ready for courier
+      - dispatch team preparing shipment
+      - shipment awaiting pickup
+      - parcel awaiting dispatch
+      - package awaiting dispatch
+      - dispatch queue
+      - scheduled for dispatch
+
+    regex:
+      - "dispatch.*pending"
+      - "awaiting dispatch"
+
+    negative:
+      - dispatched
+      - shipped
+      - handed over to courier
+
+    db_values:
+      - DISPATCH_PENDING
+      - READY_FOR_DISPATCH
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order is ready for dispatch.
+      - The package is awaiting courier pickup.
+
+    metadata:
+      customer_visible: true
+
+  PICKED_BY_COURIER:
+
+    enabled: true
+
+    priority: 84
+
+    confidence: 0.99
+
+    stage: logistics
+
+    aliases:
+      - PICKED_BY_COURIER
+      - COURIER_PICKUP
+      - HANDED_TO_COURIER
+
+    phrases:
+      - picked up by courier
+      - courier has picked up
+      - handed over to courier
+      - logistics partner collected package
+      - shipment collected
+      - package collected
+      - parcel collected
+      - courier pickup completed
+      - courier has received package
+      - handed to logistics partner
+      - collected from warehouse
+      - picked from warehouse
+      - shipment transferred to courier
+      - package transferred to courier
+      - courier accepted shipment
+
+    regex:
+      - "picked.*courier"
+      - "handed.*courier"
+      - "courier.*received"
+
+    negative:
+      - dispatch pending
+      - courier pickup pending
+
+    db_values:
+      - PICKED_BY_COURIER
+      - HANDED_TO_COURIER
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been handed over to our courier partner.
+      - The courier has collected your package.
+
+    metadata:
+      customer_visible: true
+
+    SHIPPED:
+
+    enabled: true
+
+    priority: 83
+
+    confidence: 0.99
+
+    stage: logistics
+
+    aliases:
+      - SHIPPED
+      - DISPATCHED
+      - SHIPMENT_CREATED
+
+    phrases:
+      - shipped
+      - dispatched
+      - dispatched successfully
+      - shipment created
+      - shipment confirmed
+      - package shipped
+      - parcel shipped
+      - order shipped
+      - your order has been shipped
+      - your order has been dispatched
+      - left our warehouse
+      - departed warehouse
+      - left fulfillment center
+      - shipment booked
+      - shipping label created
+      - awb generated
+      - tracking number generated
+      - tracking id generated
+      - logistics partner has received your shipment
+      - shipment is on its way
+      - handed over for shipping
+      - dispatched through courier
+      - shipped via courier
+      - your shipment is now active
+      - shipment initiated
+
+    regex:
+      - "ship(ped|ment)"
+      - "dispatch(ed)?"
+      - "awb"
+      - "tracking (number|id)"
+
+    negative:
+      - dispatch pending
+      - shipment cancelled
+      - shipment failed
+
+    db_values:
+      - SHIPPED
+      - DISPATCHED
+      - SHIPMENT_CREATED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been shipped.
+      - We've generated a tracking number.
+
+    metadata:
+      customer_visible: true
+
+  IN_TRANSIT:
+
+    enabled: true
+
+    priority: 82
+
+    confidence: 0.99
+
+    stage: logistics
+
+    aliases:
+      - IN_TRANSIT
+      - ON_THE_WAY
+      - MOVING
+
+    phrases:
+      - in transit
+      - on the way
+      - moving through courier network
+      - travelling to destination
+      - shipment is moving
+      - parcel is in transit
+      - package is in transit
+      - currently in transit
+      - shipment is on the move
+      - courier is transporting your order
+      - en route
+      - transit to destination
+      - shipment progressing
+      - shipment travelling
+      - package is travelling
+      - order is on the way
+      - logistics network update
+      - transport in progress
+      - moving between facilities
+      - shipment is underway
+
+    regex:
+      - "in transit"
+      - "on the way"
+      - "en route"
+
+    negative:
+      - delivered
+      - returned
+      - delivery failed
+
+    db_values:
+      - IN_TRANSIT
+      - ON_THE_WAY
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your package is currently in transit.
+      - The shipment is on the way.
+
+    metadata:
+      customer_visible: true
+
+  ARRIVED_AT_HUB:
+
+    enabled: true
+
+    priority: 81
+
+    confidence: 0.98
+
+    stage: logistics
+
+    aliases:
+      - ARRIVED_AT_HUB
+      - HUB_RECEIVED
+      - SORTING_CENTER
+
+    phrases:
+      - arrived at hub
+      - reached sorting center
+      - arrived at logistics hub
+      - package received at hub
+      - parcel reached hub
+      - shipment received at hub
+      - arrived at courier facility
+      - reached distribution center
+      - package is at local hub
+      - shipment sorted
+      - sorting completed
+      - processing at hub
+      - hub scan completed
+      - received at destination hub
+      - reached regional facility
+
+    regex:
+      - "arrived.*hub"
+      - "sorting"
+      - "distribution center"
+
+    negative:
+      - out for delivery
+      - delivered
+
+    db_values:
+      - ARRIVED_AT_HUB
+      - HUB_RECEIVED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your shipment has arrived at the destination hub.
+      - The parcel reached our sorting center.
+
+    metadata:
+      customer_visible: true
+
+  OUT_FOR_DELIVERY:
+
+    enabled: true
+
+    priority: 80
+
+    confidence: 1.00
+
+    stage: delivery
+
+    aliases:
+      - OUT_FOR_DELIVERY
+      - DELIVERY_IN_PROGRESS
+
+    phrases:
+      - out for delivery
+      - out with delivery executive
+      - delivery partner is on the way
+      - courier is coming today
+      - expected today
+      - arriving today
+      - on vehicle for delivery
+      - package is out for delivery
+      - parcel is out for delivery
+      - rider is on the way
+      - driver is approaching
+      - courier is nearby
+      - delivery today
+      - today's delivery
+      - shipment out for delivery
+      - your order will arrive today
+      - delivery agent has your parcel
+      - package loaded for delivery
+      - vehicle dispatched for delivery
+
+    regex:
+      - "out for delivery"
+      - "delivery.*today"
+
+    negative:
+      - delivery failed
+      - returned
+
+    db_values:
+      - OUT_FOR_DELIVERY
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order is out for delivery.
+      - The courier will deliver it today.
+
+    metadata:
+      customer_visible: true
+
+  DELIVERY_ATTEMPTED:
+
+    enabled: true
+
+    priority: 79
+
+    confidence: 0.98
+
+    stage: delivery
+
+    aliases:
+      - DELIVERY_ATTEMPTED
+      - DELIVERY_RETRY
+
+    phrases:
+      - delivery attempted
+      - attempted delivery
+      - customer unavailable
+      - no one available
+      - address not reachable
+      - delivery could not be completed
+      - recipient unavailable
+      - delivery rescheduled
+      - retry delivery
+      - second delivery attempt
+      - delivery postponed
+      - customer requested reschedule
+      - failed attempt
+      - could not contact customer
+      - delivery deferred
+
+    regex:
+      - "delivery attempt"
+      - "recipient unavailable"
+
+    negative:
+      - delivered
+
+    db_values:
+      - DELIVERY_ATTEMPTED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Our courier attempted delivery today.
+      - Delivery will be attempted again tomorrow.
+
+    metadata:
+      customer_visible: true
+
+  DELIVERED:
+
+    enabled: true
+
+    priority: 78
+
+    confidence: 1.00
+
+    stage: completed
+
+    aliases:
+      - DELIVERED
+      - COMPLETED
+
+    phrases:
+      - delivered
+      - successfully delivered
+      - shipment delivered
+      - package delivered
+      - parcel delivered
+      - handed to customer
+      - received by customer
+      - proof of delivery available
+      - delivery completed
+      - delivered successfully
+      - order completed
+      - customer has received the order
+      - item has been delivered
+      - package has arrived
+      - delivery confirmed
+      - order fulfilled
+      - shipment completed
+      - signed by recipient
+      - received successfully
+      - order delivered
+
+    regex:
+      - "deliver(ed|y completed)"
+      - "received by"
+
+    negative:
+      - delivery failed
+      - returned to sender
+
+    db_values:
+      - DELIVERED
+      - COMPLETED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been delivered.
+      - Delivery was completed successfully.
+
+    metadata:
+      customer_visible: true
+
+  DELIVERY_FAILED:
+
+    enabled: true
+
+    priority: 77
+
+    confidence: 0.99
+
+    stage: delivery
+
+    aliases:
+      - DELIVERY_FAILED
+      - FAILED_DELIVERY
+
+    phrases:
+      - delivery failed
+      - unable to deliver
+      - delivery unsuccessful
+      - package could not be delivered
+      - address not found
+      - invalid address
+      - delivery exception
+      - customer refused delivery
+      - recipient refused package
+      - shipment undeliverable
+      - courier could not complete delivery
+      - package returned due to failed delivery
+      - delivery cancelled
+      - delivery aborted
+      - unable to reach recipient
+
+    regex:
+      - "delivery failed"
+      - "unable to deliver"
+      - "undeliverable"
+
+    negative:
+      - delivered
+
+    db_values:
+      - DELIVERY_FAILED
+      - FAILED_DELIVERY
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Unfortunately, we couldn't deliver your order.
+      - The shipment was marked as undeliverable.
+
+    metadata:
+      customer_visible: true
+
+    RETURN_REQUESTED:
+
+    enabled: true
+
+    priority: 76
+
+    confidence: 0.99
+
+    stage: return
+
+    aliases:
+      - RETURN_REQUESTED
+      - RETURN_INITIATED
+      - RETURN_CREATED
+
+    phrases:
+      - return requested
+      - return initiated
+      - return created
+      - return has been requested
+      - return request received
+      - we have received your return request
+      - your return request has been registered
+      - return application submitted
+      - return process started
+      - return has been initiated
+      - exchange or return requested
+      - request for return received
+      - item return requested
+      - product return requested
+      - customer requested return
+      - return ticket created
+      - return request logged
+      - return request accepted for review
+      - return workflow started
+      - return request is under review
+
+    regex:
+      - "return (requested|initiated|created)"
+      - "return request"
+
+    negative:
+      - return rejected
+      - return cancelled
+
+    db_values:
+      - RETURN_REQUESTED
+      - RETURN_INITIATED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your return request has been received.
+      - We have initiated the return process.
+
+    metadata:
+      customer_visible: true
+
+  RETURN_APPROVED:
+
+    enabled: true
+
+    priority: 75
+
+    confidence: 0.99
+
+    stage: return
+
+    aliases:
+      - RETURN_APPROVED
+      - RETURN_ACCEPTED
+
+    phrases:
+      - return approved
+      - return accepted
+      - your return has been approved
+      - return request approved
+      - return request accepted
+      - your request qualifies for return
+      - return eligibility confirmed
+      - return is approved
+      - return authorization approved
+      - return accepted successfully
+      - return confirmed
+      - return approval completed
+      - return authorization granted
+      - return request verified
+      - return review completed
+
+    regex:
+      - "return (approved|accepted)"
+      - "return authorization"
+
+    negative:
+      - return rejected
+      - return cancelled
+
+    db_values:
+      - RETURN_APPROVED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your return request has been approved.
+      - Return authorization has been granted.
+
+    metadata:
+      customer_visible: true
+
+  RETURN_PICKUP_SCHEDULED:
+
+    enabled: true
+
+    priority: 74
+
+    confidence: 0.99
+
+    stage: return
+
+    aliases:
+      - RETURN_PICKUP_SCHEDULED
+      - PICKUP_SCHEDULED
+
+    phrases:
+      - return pickup scheduled
+      - pickup has been scheduled
+      - courier pickup scheduled
+      - reverse pickup scheduled
+      - pickup arranged
+      - return pickup arranged
+      - pickup booked
+      - pickup confirmed
+      - pickup expected tomorrow
+      - courier will collect your package
+      - reverse logistics scheduled
+      - return pickup assigned
+      - pickup appointment confirmed
+      - collection scheduled
+      - collection arranged
+
+    regex:
+      - "pickup.*scheduled"
+      - "collection.*scheduled"
+
+    negative:
+      - pickup cancelled
+
+    db_values:
+      - RETURN_PICKUP_SCHEDULED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your return pickup has been scheduled.
+      - Our courier will collect the package tomorrow.
+
+    metadata:
+      customer_visible: true
+
+  RETURN_PICKED_UP:
+
+    enabled: true
+
+    priority: 73
+
+    confidence: 1.00
+
+    stage: return
+
+    aliases:
+      - RETURN_PICKED_UP
+      - PICKUP_COMPLETED
+
+    phrases:
+      - return picked up
+      - package collected
+      - item collected
+      - reverse pickup completed
+      - courier collected your return
+      - package has been picked up
+      - return shipment collected
+      - pickup completed
+      - return parcel collected
+      - courier has collected your item
+      - collection completed
+      - reverse logistics collected
+      - pickup successful
+      - return shipment picked up
+      - collected from customer
+
+    regex:
+      - "picked up"
+      - "collection completed"
+
+    negative:
+      - pickup failed
+
+    db_values:
+      - RETURN_PICKED_UP
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Our courier has collected your return package.
+      - The return pickup has been completed.
+
+    metadata:
+      customer_visible: true
+
+  RETURN_RECEIVED:
+
+    enabled: true
+
+    priority: 72
+
+    confidence: 1.00
+
+    stage: return
+
+    aliases:
+      - RETURN_RECEIVED
+      - RETURN_AT_WAREHOUSE
+
+    phrases:
+      - return received
+      - item received at warehouse
+      - package received
+      - return parcel received
+      - warehouse received your return
+      - returned item received
+      - return completed at warehouse
+      - reverse shipment received
+      - warehouse acknowledged return
+      - return successfully received
+      - return package delivered
+      - item received successfully
+      - return accepted at warehouse
+      - warehouse intake completed
+      - received by returns department
+
+    regex:
+      - "return received"
+      - "warehouse received"
+
+    negative:
+      - return rejected
+
+    db_values:
+      - RETURN_RECEIVED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - We have received your returned item.
+      - Your package has reached our warehouse.
+
+    metadata:
+      customer_visible: true
+
+  RETURN_REJECTED:
+
+    enabled: true
+
+    priority: 71
+
+    confidence: 0.99
+
+    stage: return
+
+    aliases:
+      - RETURN_REJECTED
+      - RETURN_DENIED
+
+    phrases:
+      - return rejected
+      - return denied
+      - return request declined
+      - return not approved
+      - return not eligible
+      - return eligibility failed
+      - return request refused
+      - return cannot be processed
+      - return rejected after inspection
+      - item not eligible for return
+      - return failed validation
+      - return request closed
+      - return authorization denied
+      - return refused
+      - return disallowed
+
+    regex:
+      - "return (rejected|denied|declined)"
+
+    negative:
+      - return approved
+
+    db_values:
+      - RETURN_REJECTED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Unfortunately, your return request has been rejected.
+      - This item is not eligible for return.
+
+    metadata:
+      customer_visible: true
+
+  RETURN_COMPLETED:
+
+    enabled: true
+
+    priority: 70
+
+    confidence: 1.00
+
+    stage: completed
+
+    aliases:
+      - RETURN_COMPLETED
+      - RETURN_CLOSED
+
+    phrases:
+      - return completed
+      - return closed
+      - return process completed
+      - return successfully completed
+      - return finalized
+      - return finished
+      - reverse logistics completed
+      - return case closed
+      - return completed successfully
+      - return workflow completed
+      - return process closed
+      - return request completed
+      - return has been completed
+      - return is complete
+      - return transaction completed
+
+    regex:
+      - "return completed"
+      - "return closed"
+
+    negative:
+      - return pending
+
+    db_values:
+      - RETURN_COMPLETED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your return has been completed successfully.
+      - The return case has been closed.
+
+    metadata:
+      customer_visible: true
+  
+    REFUND_INITIATED:
+
+    enabled: true
+
+    priority: 69
+
+    confidence: 0.99
+
+    stage: refund
+
+    aliases:
+      - REFUND_INITIATED
+      - REFUND_STARTED
+
+    phrases:
+      - refund initiated
+      - refund started
+      - refund request accepted
+      - refund has been initiated
+      - we have initiated your refund
+      - refund request processed
+      - refund is being initiated
+      - refund workflow started
+      - refund ticket created
+      - refund has begun
+      - reimbursement initiated
+      - return refund initiated
+      - refund created
+      - finance team initiated refund
+      - refund request approved
+
+    regex:
+      - "refund (initiated|started|created)"
+
+    negative:
+      - refund failed
+      - refund rejected
+
+    db_values:
+      - REFUND_INITIATED
+      - REFUND_STARTED
+
+    expected_bot_entities:
+      - refund_status
+
+    examples:
+      - Your refund has been initiated.
+      - We have started processing your refund.
+
+    metadata:
+      customer_visible: true
+
+  REFUND_PROCESSING:
+
+    enabled: true
+
+    priority: 68
+
+    confidence: 0.99
+
+    stage: refund
+
+    aliases:
+      - REFUND_PROCESSING
+      - REFUND_IN_PROGRESS
+
+    phrases:
+      - refund is being processed
+      - refund processing
+      - processing refund
+      - finance team is processing refund
+      - reimbursement in progress
+      - refund under processing
+      - refund is underway
+      - refund verification in progress
+      - bank processing refund
+      - payment gateway processing refund
+      - refund pending settlement
+      - refund is under review
+      - refund approval in progress
+      - refund transaction processing
+      - refund currently processing
+
+    regex:
+      - "refund.*processing"
+      - "processing refund"
+
+    negative:
+      - refunded
+      - refund failed
+
+    db_values:
+      - REFUND_PROCESSING
+
+    expected_bot_entities:
+      - refund_status
+
+    examples:
+      - Your refund is currently being processed.
+      - The finance team is processing your refund.
+
+    metadata:
+      customer_visible: true
+
+  REFUNDED:
+
+    enabled: true
+
+    priority: 67
+
+    confidence: 1.00
+
+    stage: refund
+
+    aliases:
+      - REFUNDED
+      - REFUND_COMPLETED
+
+    phrases:
+      - refunded
+      - refund completed
+      - refund successful
+      - amount refunded
+      - refund has been credited
+      - reimbursement completed
+      - refund transferred
+      - refund paid
+      - refund settled
+      - amount has been returned
+      - refund processed successfully
+      - money refunded
+      - refund has been issued
+      - refund credited to your account
+      - refund completed successfully
+
+    regex:
+      - "refund(ed| completed)"
+      - "credited"
+
+    negative:
+      - refund pending
+      - refund failed
+
+    db_values:
+      - REFUNDED
+      - REFUND_COMPLETED
+
+    expected_bot_entities:
+      - refund_status
+
+    examples:
+      - Your refund has been completed.
+      - The refund amount has been credited.
+
+    metadata:
+      customer_visible: true
+
+  REFUND_FAILED:
+
+    enabled: true
+
+    priority: 66
+
+    confidence: 0.99
+
+    stage: refund
+
+    aliases:
+      - REFUND_FAILED
+      - REFUND_ERROR
+
+    phrases:
+      - refund failed
+      - refund unsuccessful
+      - refund rejected
+      - refund could not be processed
+      - reimbursement failed
+      - refund error
+      - refund transaction failed
+      - refund declined
+      - bank rejected refund
+      - refund processing failed
+      - refund was unsuccessful
+      - unable to process refund
+      - refund could not be completed
+      - refund payment failed
+      - refund settlement failed
+
+    regex:
+      - "refund (failed|rejected|declined)"
+
+    negative:
+      - refunded
+
+    db_values:
+      - REFUND_FAILED
+
+    expected_bot_entities:
+      - refund_status
+
+    examples:
+      - Unfortunately, your refund could not be processed.
+      - The refund transaction failed.
+
+    metadata:
+      customer_visible: true
+
+  CANCEL_REQUESTED:
+
+    enabled: true
+
+    priority: 65
+
+    confidence: 0.99
+
+    stage: cancellation
+
+    aliases:
+      - CANCEL_REQUESTED
+      - CANCELLATION_REQUESTED
+
+    phrases:
+      - cancellation requested
+      - cancel requested
+      - cancel my order
+      - order cancellation initiated
+      - cancellation request received
+      - cancellation request submitted
+      - order cancel request created
+      - customer requested cancellation
+      - cancellation initiated
+      - request to cancel order
+      - cancel order request
+      - cancellation registered
+      - cancellation ticket created
+      - cancellation has been requested
+      - your cancellation request has been received
+
+    regex:
+      - "cancel(lation)?.*request"
+
+    negative:
+      - cancelled
+
+    db_values:
+      - CANCEL_REQUESTED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - We have received your cancellation request.
+      - Your cancellation request is under review.
+
+    metadata:
+      customer_visible: true
+
+  CANCELLATION_PENDING:
+
+    enabled: true
+
+    priority: 64
+
+    confidence: 0.98
+
+    stage: cancellation
+
+    aliases:
+      - CANCELLATION_PENDING
+      - CANCEL_PENDING
+
+    phrases:
+      - cancellation pending
+      - awaiting cancellation approval
+      - cancellation under review
+      - cancellation is being processed
+      - pending cancellation
+      - cancellation verification pending
+      - waiting for cancellation confirmation
+      - order cancellation in progress
+      - cancellation approval pending
+      - cancellation request processing
+      - cancellation awaiting verification
+      - order is pending cancellation
+      - cancellation workflow started
+      - cancellation review in progress
+      - cancellation is underway
+
+    regex:
+      - "cancellation.*pending"
+      - "cancel.*review"
+
+    negative:
+      - cancelled
+
+    db_values:
+      - CANCELLATION_PENDING
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your cancellation request is being processed.
+      - Cancellation approval is pending.
+
+    metadata:
+      customer_visible: true
+
+  CANCELLED:
+
+    enabled: true
+
+    priority: 63
+
+    confidence: 1.00
+
+    stage: cancellation
+
+    aliases:
+      - CANCELLED
+      - ORDER_CANCELLED
+
+    phrases:
+      - cancelled
+      - order cancelled
+      - cancellation completed
+      - order has been cancelled
+      - successfully cancelled
+      - order cancellation successful
+      - your order was cancelled
+      - cancellation confirmed
+      - cancelled successfully
+      - order closed
+      - purchase cancelled
+      - booking cancelled
+      - cancellation finalized
+      - order voided
+      - order terminated
+
+    regex:
+      - "cancelled"
+      - "order cancelled"
+
+    negative:
+      - cancellation pending
+
+    db_values:
+      - CANCELLED
+      - ORDER_CANCELLED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been cancelled.
+      - Cancellation has been completed.
+
+    metadata:
+      customer_visible: true
+
+  ORDER_COMPLETED:
+
+    enabled: true
+
+    priority: 10
+
+    confidence: 1.00
+
+    stage: completed
+
+    aliases:
+      - ORDER_COMPLETED
+      - COMPLETED
+      - CLOSED
+
+    phrases:
+      - order completed
+      - transaction completed
+      - order closed
+      - process completed
+      - thank you for shopping with us
+      - your order journey is complete
+      - no further action required
+      - case closed
+      - order fulfilled successfully
+      - order lifecycle completed
+      - everything is complete
+      - order finalized
+      - purchase completed
+      - service completed
+      - request completed
+
+    regex:
+      - "order completed"
+      - "case closed"
+
+    negative: []
+
+    db_values:
+      - COMPLETED
+      - CLOSED
+
+    expected_bot_entities:
+      - order_status
+
+    examples:
+      - Your order has been completed successfully.
+      - Thank you for shopping with us.
+
+    metadata:
+      customer_visible: true
+
+  
